@@ -35,7 +35,6 @@ func run(ctx context.Context, cancel context.CancelFunc, httpPort int, dataDir s
 	}
 	defer func() {
 		if err := closeLogger(); err != nil {
-
 			fmt.Fprintf(os.Stderr, "Failed to close logger: %v\n", err)
 		}
 	}()
@@ -92,7 +91,7 @@ func initializeLogger(logFile string) (*slog.Logger, closeFunc, error) {
 			}
 			return nil
 		}
-		handlers = append(handlers, slog.NewTextHandler(bufferedFile, &slog.HandlerOptions{
+		handlers = append(handlers, slog.NewJSONHandler(bufferedFile, &slog.HandlerOptions{
 			Level: slog.LevelInfo,
 		}))
 		closers = append(closers, close)
