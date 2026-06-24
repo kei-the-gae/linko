@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
 	pkgerr "github.com/pkg/errors"
 
 	"boot.dev/linko/internal/build"
@@ -81,10 +83,14 @@ func run(ctx context.Context, cancel context.CancelFunc, httpPort int, dataDir s
 type closeFunc func() error
 
 func initializeLogger(logFile string) (*slog.Logger, closeFunc, error) {
+	fd := os.Stderr.Fd()
+	isTTY := isatty.IsTerminal(fd) || isatty.IsCygwinTerminal(fd)
+
 	handlers := []slog.Handler{
-		slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		tint.NewHandler(os.Stderr, &tint.Options{
 			Level:       slog.LevelDebug,
 			ReplaceAttr: replaceAttr,
+			NoColor:     !isTTY,
 		}),
 	}
 	closers := []closeFunc{}
